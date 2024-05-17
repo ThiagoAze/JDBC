@@ -24,6 +24,7 @@ public class FilmeService {
         }
     }
 
+
      public List<Filme> listarFilmes() {
         try {
             var dao = new FilmeDao();
@@ -31,6 +32,17 @@ public class FilmeService {
         }catch (Exception e){
             System.out.println(e.getMessage());
             return Collections.emptyList();
+        }
+    }
+
+    public void deletar(Filme filme) {
+        try {
+            var dao = new FilmeDao();
+            if (filme.getId() != null) {
+                dao.deletar(filme.getId());
+            }
+        }catch (Exception e){
+            System.out.println(e.getMessage());
         }
     }
 }

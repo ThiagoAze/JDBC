@@ -56,7 +56,7 @@ public class FilmeDao {
     }
 
     public void deletar(int id) throws SQLException {
-        String sql = "delete from Filme where idFilme = ?";
+        String sql = "delete from filme where id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id);
         ps.execute();

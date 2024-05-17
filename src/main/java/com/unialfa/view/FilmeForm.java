@@ -4,6 +4,7 @@ import com.unialfa.model.Filme;
 import com.unialfa.service.FilmeService;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
@@ -20,6 +21,7 @@ public class FilmeForm extends JFrame {
     private JTextField campoDiretor;
     private JButton botaoSalvar;
     private JButton botaoCancelar;
+    private JButton botaoDeletar;
     private JTable tabelaFilme;
 
     public FilmeForm() {
@@ -70,9 +72,15 @@ public class FilmeForm extends JFrame {
         constraints.gridy = 3;
         painelEntrada.add(botaoCancelar, constraints);
 
+        botaoDeletar = new JButton("Deletar");
+        botaoDeletar.addActionListener(e -> executarAcaoDoBotaoDeletar());
+        constraints.gridx = 1;
+        constraints.gridy = 3;
+        painelEntrada.add(botaoDeletar, constraints);
+
         botaoSalvar = new JButton("Salvar");
         botaoSalvar.addActionListener(e -> executarAcaoDoBotao());
-        constraints.gridx = 1;
+        constraints.gridx = 2;
         constraints.gridy = 3;
         painelEntrada.add(botaoSalvar, constraints);
 
@@ -80,6 +88,8 @@ public class FilmeForm extends JFrame {
 
         tabelaFilme = new JTable();
         tabelaFilme.setModel(carregarDadosLocadoras());
+        tabelaFilme.getSelectionModel().addListSelectionListener(e -> selecionarFilme(e));
+        tabelaFilme.setDefaultEditor(Object.class, null);
 
         JScrollPane scrollPane = new JScrollPane(tabelaFilme);
         painelSaida.add(scrollPane, BorderLayout.CENTER);
@@ -118,6 +128,11 @@ public class FilmeForm extends JFrame {
         limparCampos();
         tabelaFilme.setModel(carregarDadosLocadoras());
     }
+    private void executarAcaoDoBotaoDeletar() {
+        service.deletar(construirFilme());
+        limparCampos();
+        tabelaFilme.setModel(carregarDadosLocadoras());
+    }
 
     private Filme construirFilme(){
         return campoId.getText().isEmpty()
@@ -128,11 +143,19 @@ public class FilmeForm extends JFrame {
                 campoDiretor.getText());
     }
 
-    private void selecionarFilme(){
-//        var filme = listaDeFilmes.getSelectedValue();
-//        if (filme == null) return;
-//        campoNomeFilme.setText(filme.getNome());
-//        campoDiretor.setText(filme.getDiretor());
-//        campoId.setText(filme.getId().toString());
+    private void selecionarFilme(ListSelectionEvent e){
+        if (!e.getValueIsAdjusting()) {
+            int selectedRow = tabelaFilme.getSelectedRow();
+            if (selectedRow != -1) {
+                var id = (Integer) tabelaFilme.getValueAt(selectedRow, 0);
+                campoId.setText(id.toString());
+
+                var nome = (String) tabelaFilme.getValueAt(selectedRow, 1);
+                campoNomeFilme.setText(nome);
+
+                var diretor = (String) tabelaFilme.getValueAt(selectedRow, 2);
+                campoDiretor.setText(diretor);
+            }
+        }
     }
 }
